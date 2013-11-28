@@ -1,0 +1,8 @@
+{
+  "name": "accounts-fogbugz",
+  "description": "Login service for FogBugz accounts.",
+  "homepage": "https://github.com/sergeyt/meteor-accounts-fogbugz",
+  "author": "Sergey Todyshev",
+  "version": "0.0.1",
+  "git": "https://github.com/sergeyt/meteor-accounts-fogbugz.git"
+}
