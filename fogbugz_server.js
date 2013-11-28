@@ -25,7 +25,11 @@
 		var match = (/<token>(.*)<\/token>/g).exec(xml);
 		if (match){
 			var token = match[1];
-			return Accounts.updateOrCreateUserFromExternalService(serviceName, {token: token});
+			return Accounts.updateOrCreateUserFromExternalService(serviceName, {
+				fogbugz: options.fogbugz,
+				email: options.email,
+				token: token
+			});
 		}
 
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'FogBugz Login Failed');
