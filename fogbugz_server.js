@@ -33,7 +33,7 @@
 		var xml = response.content;
 		log(xml);
 
-		var match = (/<token>(![CDATA[)?(.*)(]])?<\/token>/g).exec(xml);
+		var match = (/<token>(<![CDATA[)?(.+)(]]>)?<\/token>/g).exec(xml);
 		if (match){
 			// TODO get user info
 			var token = match[2];
