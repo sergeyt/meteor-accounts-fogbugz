@@ -114,6 +114,7 @@
 		var serviceData = {
 			id: person.id,
 			endpoint: endpoint,
+			email: options.email,
 			token: token
 		};
 
