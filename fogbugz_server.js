@@ -29,7 +29,8 @@
 				'&email=' + encodeURIComponent(options.email) +
 				'&password=' + encodeURIComponent(options.password);
 
-		var xml = Meteor.http.get(url);
+		var response = HTTP.get(url);
+		var xml = response.content;
 		log(xml);
 
 		var match = (/<token>(.*)<\/token>/g).exec(xml);
