@@ -52,7 +52,7 @@
 			var i = s.indexOf(prefix) >= 0;
 			if (i >= 0){
 				var j = s.lastIndexOf(suffix);
-				return s.substring(i + prefix.length, j);
+				return s.substring(i + prefix.length - 1, j);
 			}
 			return s;
 		}
