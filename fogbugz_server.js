@@ -13,7 +13,7 @@
 		if (!options.fogbugz && !options.email && !options.password)
 			return undefined; // don't handle
 
-		var verbose = options.verbose;
+		var verbose = false;
 		function log(msg){
 			if (!!verbose) {
 				console.log('fogbugz: ' + msg);
@@ -109,7 +109,7 @@
 			language: 'sLanguage'
 		});
 
-		log(JSON.stringify(person, null, 2));
+		// log(JSON.stringify(person, null, 2));
 
 		var serviceData = {
 			id: person.id,
@@ -120,8 +120,8 @@
 		var result = Accounts.updateOrCreateUserFromExternalService(serviceName, serviceData, person);
 		Meteor.users.update(result.id, {$set: {profile: person}});
 
-		var user = Meteor.users.findOne(result.id);
-		log(JSON.stringify(user, null, 2));
+		// var user = Meteor.users.findOne(result.id);
+		// log(JSON.stringify(user, null, 2));
 
 		return result;
 	});
