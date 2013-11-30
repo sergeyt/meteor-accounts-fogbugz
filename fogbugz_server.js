@@ -14,21 +14,22 @@
 			return undefined; // don't handle
 
 		var verbose = false;
-		function log(msg){
+
+		function log(msg) {
 			if (!!verbose) {
 				console.log('fogbugz: ' + msg);
 			}
 		}
 
 		var endpoint = options.fogbugz;
-		if (endpoint.charAt(endpoint.length - 1) != '/'){
+		if (endpoint.charAt(endpoint.length - 1) != '/') {
 			endpoint += '/';
 		}
 
-		function cmd(name){
+		function cmd(name) {
 			var url = endpoint + 'api.asp?cmd=' + name;
 			var i = 1;
-			while (i + 1 < arguments.length){
+			while (i + 1 < arguments.length) {
 				url += '&' + arguments[i++];
 				url += '=' + encodeURIComponent(arguments[i++]);
 			}
@@ -45,31 +46,31 @@
 			return xml;
 		}
 
-		function cdata(s){
+		function cdata(s) {
 			var prefix = '<![CDATA[';
 			var suffix = ']]>';
 			var i = s.indexOf(prefix) >= 0;
-			if (i >= 0){
+			if (i >= 0) {
 				var j = s.lastIndexOf(suffix);
 				return s.substring(i + prefix.length - 1, j);
 			}
 			return s;
 		}
 
-		function parseElem(xml, name){
+		function parseElem(xml, name) {
 			var e = '<' + name + '[^>]*>(.+)<\\/' + name + '>';
 			var match = (new RegExp(e, 'g')).exec(xml);
-			if (match){
+			if (match) {
 				return cdata(match[1]);
 			}
 			return null;
 		}
 
-		function parse(xml, schema){
+		function parse(xml, schema) {
 			var result = {};
-			Object.keys(schema).forEach(function(key){
+			Object.keys(schema).forEach(function(key) {
 				var p = schema[key];
-				if (typeof p === 'string'){
+				if (typeof p === 'string') {
 					var v = parseElem(xml, p);
 					if (v) result[key] = v;
 				} else {
@@ -79,7 +80,7 @@
 			return result;
 		}
 
-		function fail(xml){
+		function fail(xml) {
 			var error = parseElem(xml, 'error') || 'FogBugz Login Failed';
 			throw new Meteor.Error(Accounts.LoginCancelledError.numericError, error);
 		}
@@ -87,7 +88,7 @@
 		var xml = cmd('logon', 'email', options.email, 'password', options.password);
 
 		var token = parseElem(xml, 'token');
-		if (!token){
+		if (!token) {
 			fail(xml);
 		}
 
@@ -119,7 +120,20 @@
 		};
 
 		var result = Accounts.updateOrCreateUserFromExternalService(serviceName, serviceData, person);
-		Meteor.users.update(result.id, {$set: {profile: person}});
+
+		// fogbugz user could have multiple emails
+		var emails = person.email.split(',').filter(function(s){ return s.length > 0; }).map(function(email){
+			return { address: email, verified: true };
+		});
+
+		// update user document
+		Meteor.users.update(result.id, {
+			$set: {
+				username: person.name,
+				emails: emails,
+				profile: person
+			}
+		});
 
 		// var user = Meteor.users.findOne(result.id);
 		// log(JSON.stringify(user, null, 2));
