@@ -22,7 +22,8 @@
 				{
 					fogbugz: options.fogbugz,
 					email: options.email,
-					password: options.password
+					password: options.password,
+					verbose: options.verbose
 				}
 			],
 			userCallback: loginCallback
