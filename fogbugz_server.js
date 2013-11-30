@@ -33,6 +33,9 @@
 				url += '&' + arguments[i++];
 				url += '=' + encodeURIComponent(arguments[i++]);
 			}
+
+			log('GET ' + url);
+
 			var response = HTTP.get(url);
 			var xml = response.content || '<error>invalid response!</error>';
 			log(xml);
