@@ -120,6 +120,10 @@
 
 		var result = Accounts.updateOrCreateUserFromExternalService(serviceName, serviceData, person);
 		Meteor.users.update(result.id, {$set: {profile: person}});
+
+		var user = Meteor.users.findOne(result.id);
+		log(JSON.stringify(user, null, 2));
+
 		return result;
 	});
 })();
