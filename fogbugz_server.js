@@ -15,7 +15,7 @@
 
 		var verbose = options.verbose;
 		function log(msg){
-			if (verbose) {
+			if (!!verbose) {
 				console.log('fogbugz: ' + msg);
 			}
 		}
@@ -34,9 +34,12 @@
 
 		var match = (/<token>(.*)<\/token>/g).exec(xml);
 		if (match){
+			// TODO get user info
 			var token = match[1];
+			log('token=' + token);
 			return Accounts.updateOrCreateUserFromExternalService(serviceName, {
-				fogbugz: options.fogbugz,
+				id: token,
+				fogbugz: endpoint,
 				email: options.email,
 				token: token
 			});
