@@ -94,7 +94,7 @@
 
 		log('token=' + token);
 
-		xml = cmd('viewPerson');
+		xml = cmd('viewPerson', 'token', token);
 
 		var person = parse(xml, {
 			id: 'ixPerson',
