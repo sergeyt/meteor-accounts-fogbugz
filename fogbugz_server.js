@@ -35,6 +35,7 @@
 			}
 			var response = HTTP.get(url);
 			var xml = response.content || '<error>invalid response!</error>';
+			log(xml);
 
 			var error = parseElem(xml, 'error');
 			if (error) throw new Meteor.Error(Accounts.LoginCancelledError.numericError, error);
@@ -82,7 +83,6 @@
 		}
 
 		var xml = cmd('logon', 'email', options.email, 'passowrd', options.password);
-		log(xml);
 
 		var token = parseElem(xml, 'token');
 		if (!token){
