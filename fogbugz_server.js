@@ -85,7 +85,7 @@
 			throw new Meteor.Error(Accounts.LoginCancelledError.numericError, error);
 		}
 
-		var xml = cmd('logon', 'email', options.email, 'passowrd', options.password);
+		var xml = cmd('logon', 'email', options.email, 'password', options.password);
 
 		var token = parseElem(xml, 'token');
 		if (!token){
