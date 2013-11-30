@@ -33,10 +33,10 @@
 		var xml = response.content;
 		log(xml);
 
-		var match = (/<token>(.*)<\/token>/g).exec(xml);
+		var match = (/<token>(![CDATA[)?(.*)(]])?<\/token>/g).exec(xml);
 		if (match){
 			// TODO get user info
-			var token = match[1];
+			var token = match[2];
 			log('token=' + token);
 			return Accounts.updateOrCreateUserFromExternalService(serviceName, {
 				id: token,
