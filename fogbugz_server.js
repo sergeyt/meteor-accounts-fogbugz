@@ -24,14 +24,23 @@
 		if (endpoint.charAt(endpoint.length - 1) != '/'){
 			endpoint += '/';
 		}
+		endpoint += 'api.asp?';
 
-		var url = endpoint + 'api.asp?cmd=logon' +
-				'&email=' + encodeURIComponent(options.email) +
-				'&password=' + encodeURIComponent(options.password);
+		function cmd(name){
+			var url = endpoint + 'cmd=' + name;
+			var i = 1;
+			while (i + 1 < arguments.length){
+				url += '&' + arguments[i++];
+				url += '=' + encodeURIComponent(arguments[i++]);
+			}
+			var response = HTTP.get(url);
+			var xml = response.content || '<error>invalid response!</error>';
 
-		var response = HTTP.get(url);
-		var xml = response.content;
-		log(xml);
+			var error = parseElem(xml, 'error');
+			if (error) throw new Meteor.Error(Accounts.LoginCancelledError.numericError, error);
+
+			return xml;
+		}
 
 		function cdata(s){
 			var prefix = '<![CDATA[';
@@ -44,19 +53,65 @@
 			return s;
 		}
 
-		var match = (/<token>(.+)<\/token>/g).exec(xml);
-		if (match){
-			// TODO get user info
-			var token = cdata(match[1]);
-			log('token=' + token);
-			return Accounts.updateOrCreateUserFromExternalService(serviceName, {
-				id: token,
-				fogbugz: endpoint,
-				email: options.email,
-				token: token
-			});
+		function parseElem(xml, name){
+			var e = '<' + name + '>(.+)<\\/' + name + '>';
+			var match = (new RegExp(e, 'q')).exec(xml);
+			if (match){
+				return cdata(match[1]);
+			}
+			return null;
 		}
 
-		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'FogBugz Login Failed');
+		function parse(xml, schema){
+			var result = {};
+			Object.keys(schema).forEach(function(key){
+				var p = schema[key];
+				if (typeof p === 'string'){
+					var v = parseElem(xml, p);
+					if (v) result[key] = v;
+				} else {
+					throw new Error('not implemented!');
+				}
+			});
+			return result;
+		}
+
+		function fail(xml){
+			var error = parseElem(xml, 'error') || 'FogBugz Login Failed';
+			throw new Meteor.Error(Accounts.LoginCancelledError.numericError, error);
+		}
+
+		var xml = cmd('logon', 'email', options.email, 'passowrd', options.password);
+		log(xml);
+
+		var token = parseElem(xml, 'token');
+		if (!token){
+			fail(xml);
+		}
+
+		log('token=' + token);
+
+		xml = cmd('viewPerson');
+
+		var person = parse(xml, {
+			id: 'ixPerson',
+			name: 'sFullName',
+			email: 'sEmail',
+			admin: 'fAdministrator',
+			community: 'fCommunity',
+			virtual: 'fVirtual',
+			deleted: 'fDeleted',
+			notify: 'fNotify',
+			homepage: 'sHomepage',
+			locale: 'sLocale',
+			language: 'sLanguage'
+		});
+
+		var serviceData = {
+			id: person.id,
+			fogbugz: endpoint
+		};
+
+		return Accounts.updateOrCreateUserFromExternalService(serviceName, serviceData, person);
 	});
 })();
