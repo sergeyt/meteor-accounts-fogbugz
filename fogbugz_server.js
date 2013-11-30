@@ -24,10 +24,9 @@
 		if (endpoint.charAt(endpoint.length - 1) != '/'){
 			endpoint += '/';
 		}
-		endpoint += 'api.asp?';
 
 		function cmd(name){
-			var url = endpoint + 'cmd=' + name;
+			var url = endpoint + 'api.asp?cmd=' + name;
 			var i = 1;
 			while (i + 1 < arguments.length){
 				url += '&' + arguments[i++];
@@ -114,7 +113,7 @@
 
 		var serviceData = {
 			id: person.id,
-			fogbugz: endpoint,
+			endpoint: endpoint,
 			token: token
 		};
 
