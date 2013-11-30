@@ -110,6 +110,8 @@
 			language: 'sLanguage'
 		});
 
+		log(JSON.stringify(person, null, 2));
+
 		var serviceData = {
 			id: person.id,
 			fogbugz: endpoint
