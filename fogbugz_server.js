@@ -56,7 +56,7 @@
 
 		function parseElem(xml, name){
 			var e = '<' + name + '>(.+)<\\/' + name + '>';
-			var match = (new RegExp(e, 'q')).exec(xml);
+			var match = (new RegExp(e, 'g')).exec(xml);
 			if (match){
 				return cdata(match[1]);
 			}
