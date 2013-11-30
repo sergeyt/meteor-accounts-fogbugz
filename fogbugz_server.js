@@ -114,9 +114,11 @@
 
 		var serviceData = {
 			id: person.id,
-			fogbugz: endpoint
+			fogbugz: endpoint,
+			token: token
 		};
 
-		return Accounts.updateOrCreateUserFromExternalService(serviceName, serviceData, person);
+		var result = Accounts.updateOrCreateUserFromExternalService(serviceName, serviceData, person);
+		Meteor.users.update(result.id, {$set: {profile: person}});
 	});
 })();
